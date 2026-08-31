@@ -13,16 +13,32 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build de l application...'
-                sh 'mvn clean package -DskipTests'
+
+                dir('devsecops-app') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Execution des tests...'
-                sh 'mvn test'
+
+                dir('devsecops-app') {
+                    sh 'mvn test'
+                }
             }
         }
 
+    }
+
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
