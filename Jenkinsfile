@@ -26,8 +26,17 @@ pipeline {
 
                 dir('devsecops-app') {
                     sh 'mvn test'
-
                     junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+
+        stage('Code Coverage') {
+            steps {
+                echo 'Generation du rapport JaCoCo...'
+
+                dir('devsecops-app') {
+                    sh 'mvn jacoco:report'
                 }
             }
         }
