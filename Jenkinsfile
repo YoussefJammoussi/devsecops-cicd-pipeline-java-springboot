@@ -21,16 +21,16 @@ pipeline {
         }
 
         stage('Test') {
-            steps {
-                echo 'Execution des tests...'
+    steps {
+        echo 'Execution des tests...'
 
-                dir('devsecops-app') {
-                    sh 'mvn test'
-                }
-            }
+        dir('devsecops-app') {
+            sh 'mvn test'
+
+            junit 'target/surefire-reports/*.xml'
         }
-
     }
+}
 
     post {
         success {
