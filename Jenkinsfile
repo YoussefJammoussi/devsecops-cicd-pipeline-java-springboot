@@ -48,11 +48,10 @@ pipeline {
                 dir('devsecops-app') {
                     withSonarQubeEnv('SonarQube') {
                         sh '''
-                            mvn sonar:sonar \
-                            -Dsonar.projectKey=devsecops-app \
-                            -Dsonar.projectName=devsecops-app \
-                            -Dsonar.host.url=http://localhost:9000
-                        '''
+                           mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                           -Dsonar.projectKey=devsecops-app \
+                           -Dsonar.projectName=devsecops-app
+                       ''' 
                     }
                 }
             }
