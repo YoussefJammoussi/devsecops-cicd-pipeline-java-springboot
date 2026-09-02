@@ -48,11 +48,19 @@ pipeline {
                 dir('devsecops-app') {
                     withSonarQubeEnv('SonarQube') {
                         sh '''
-                           mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                           -Dsonar.projectKey=devsecops-app \
-                           -Dsonar.projectName=devsecops-app
-                       ''' 
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                            -Dsonar.projectKey=devsecops-app \
+                            -Dsonar.projectName=devsecops-app
+                        '''
                     }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
