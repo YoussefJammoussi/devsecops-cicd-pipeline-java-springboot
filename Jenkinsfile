@@ -1,11 +1,6 @@
 pipeline {
 agent any
 
-```
-options {
-    skipDefaultCheckout(true)
-}
-
 stages {
 
     stage('Checkout') {
@@ -80,7 +75,6 @@ post {
         echo 'Pipeline failed!'
     }
 }
-```
 
 }
 
