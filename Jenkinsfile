@@ -66,7 +66,7 @@ stages {
                             mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
                             -Dsonar.projectKey=devsecops-app \
                             -Dsonar.projectName=devsecops-app
-                        
+                        '''
                     }
                 }
             }
