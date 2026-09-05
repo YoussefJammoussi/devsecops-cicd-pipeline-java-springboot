@@ -55,6 +55,43 @@ stages {
                 }
             }
         }
+
+        stage('SonarQube Analysis') {
+            steps {
+                echo 'Analyse du code avec SonarQube...'
+
+                dir('devsecops-app') {
+                    withSonarQubeEnv('SonarQube') {
+                        sh '''
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                            -Dsonar.projectKey=devsecops-app \
+                            -Dsonar.projectName=devsecops-app
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Construction de l image Docker...'
+
+                dir('devsecops-app') {
+                    sh '''
+                        GIT_SHA=$(git rev-parse --short HEAD)
+                        docker build -t devsecops-app:${BUILD_NUMBER}-${GIT_SHA} .
+                    '''
+                }
+            }
+        }
     }
 
     stage('Quality Gate') {
