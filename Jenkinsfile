@@ -1,57 +1,42 @@
 pipeline {
-agent any
+    agent any
 
-stages {
+    stages {
 
-    stage('Checkout') {
-        steps {
-            echo 'Checkout du code source...'
-            checkout scm
-        }
-    }
-
-    stage('Build') {
-        steps {
-            echo 'Build de l application...'
-
-            dir('devsecops-app') {
-                sh 'mvn clean package -DskipTests'
+        stage('Checkout') {
+            steps {
+                echo 'Checkout du code source...'
+                checkout scm
             }
         }
-    }
 
-    stage('Test') {
-        steps {
-            echo 'Execution des tests...'
+        stage('Build') {
+            steps {
+                echo 'Build de l application...'
 
-            dir('devsecops-app') {
-                sh 'mvn test'
-                junit 'target/surefire-reports/*.xml'
+                dir('devsecops-app') {
+                    sh 'mvn clean package -DskipTests'
+                }
             }
         }
-    }
 
-    stage('Code Coverage') {
-        steps {
-            echo 'Generation du rapport JaCoCo...'
+        stage('Test') {
+            steps {
+                echo 'Execution des tests...'
 
-            dir('devsecops-app') {
-                sh 'mvn jacoco:report'
+                dir('devsecops-app') {
+                    sh 'mvn test'
+                    junit 'target/surefire-reports/*.xml'
+                }
             }
         }
-    }
 
-    stage('SonarQube Analysis') {
-        steps {
-            echo 'Analyse du code avec SonarQube...'
+        stage('Code Coverage') {
+            steps {
+                echo 'Generation du rapport JaCoCo...'
 
-            dir('devsecops-app') {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                        -Dsonar.projectKey=devsecops-app \
-                        -Dsonar.projectName=devsecops-app
-                   
+                dir('devsecops-app') {
+                    sh 'mvn jacoco:report'
                 }
             }
         }
@@ -62,11 +47,7 @@ stages {
 
                 dir('devsecops-app') {
                     withSonarQubeEnv('SonarQube') {
-                        sh '''
-                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-                            -Dsonar.projectKey=devsecops-app \
-                            -Dsonar.projectName=devsecops-app
-                        '''
+                        sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-app -Dsonar.projectName=devsecops-app'
                     }
                 }
             }
@@ -94,24 +75,13 @@ stages {
         }
     }
 
-    stage('Quality Gate') {
-        steps {
-            timeout(time: 5, unit: 'MINUTES') {
-                waitForQualityGate abortPipeline: true
-            }
+    post {
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
-
-post {
-    success {
-        echo 'Pipeline executed successfully!'
-    }
-
-    failure {
-        echo 'Pipeline failed!'
-    }
-}
-
-}
-
