@@ -73,6 +73,25 @@ pipeline {
                 }
             }
         }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Analyse de sécurité de l image avec Trivy...'
+
+                dir('devsecops-app') {
+                    sh '''
+                        GIT_SHA=$(git rev-parse --short HEAD)
+                        IMAGE_TAG=${BUILD_NUMBER}-${GIT_SHA}
+
+                        trivy image \
+                            --timeout 15m \
+                            --severity HIGH,CRITICAL \
+                            --exit-code 1 \
+                            devsecops-app:${IMAGE_TAG}
+                    '''
+                }
+            }
+        }
     }
 
     post {
