@@ -92,6 +92,40 @@ pipeline {
                 }
             }
         }
+
+        stage('Docker Push') {
+            steps {
+                echo 'Push de l image vers Nexus...'
+
+                dir('devsecops-app') {
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'nexus-credentials',
+                            usernameVariable: 'NEXUS_USERNAME',
+                            passwordVariable: 'NEXUS_PASSWORD'
+                        )
+                    ]) {
+                        sh '''
+                            GIT_SHA=$(git rev-parse --short HEAD)
+                            IMAGE_TAG=${BUILD_NUMBER}-${GIT_SHA}
+
+                            NEXUS_REGISTRY=192.168.38.136:8083
+                            IMAGE_NAME=${NEXUS_REGISTRY}/devsecops-app:${IMAGE_TAG}
+
+                            echo "$NEXUS_PASSWORD" | docker login "$NEXUS_REGISTRY" \
+                                --username "$NEXUS_USERNAME" \
+                                --password-stdin
+
+                            docker tag devsecops-app:${IMAGE_TAG} ${IMAGE_NAME}
+
+                            docker push ${IMAGE_NAME}
+
+                            docker logout "$NEXUS_REGISTRY"
+                        '''
+                    }
+                }
+            }
+        }
     }
 
     post {
