@@ -47,7 +47,11 @@ pipeline {
 
                 dir('devsecops-app') {
                     withSonarQubeEnv('SonarQube') {
-                        sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=devsecops-app -Dsonar.projectName=devsecops-app'
+                        sh '''
+                            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                            -Dsonar.projectKey=devsecops-app \
+                            -Dsonar.projectName=devsecops-app
+                        '''
                     }
                 }
             }
@@ -129,12 +133,62 @@ pipeline {
     }
 
     post {
+
         success {
             echo 'Pipeline executed successfully!'
+
+            emailext(
+                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Pipeline executed successfully.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Status: SUCCESS
+
+Jenkins URL:
+${env.BUILD_URL}
+""",
+                to: "youssefjammoussi101@gmail.com"
+            )
         }
 
         failure {
             echo 'Pipeline failed!'
+
+            emailext(
+                subject: "FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Pipeline failed.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Status: FAILURE
+
+Jenkins URL:
+${env.BUILD_URL}
+""",
+                to: "youssefjammoussi101@gmail.com"
+            )
+        }
+
+        unstable {
+            echo 'Pipeline is unstable!'
+
+            emailext(
+                subject: "UNSTABLE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Pipeline is unstable.
+
+Job: ${env.JOB_NAME}
+Build: #${env.BUILD_NUMBER}
+Status: UNSTABLE
+
+Jenkins URL:
+${env.BUILD_URL}
+""",
+                to: "youssefjammoussi101@gmail.com"
+            )
         }
     }
 }
