@@ -76,7 +76,6 @@ devsecops-cicd-pipeline-java-springboot/
 │   └── images/
 │       ├── jenkins-pipeline.png
 │       ├── sonarqube-quality-gate.png
-│       ├── trivy-scan.png
 │       ├── nexus-image.png
 │       ├── argocd-healthy-synced.png
 │       ├── application-running.png
@@ -97,7 +96,6 @@ Add screenshots to `docs/images/` and use the filenames below, or update the lin
 |---|---|
 | `jenkins-pipeline.png` | Jenkins pipeline execution and stage results |
 | `sonarqube-quality-gate.png` | SonarQube analysis and Quality Gate |
-| `trivy-scan.png` | Trivy image scan output |
 | `nexus-image.png` | Published image in Nexus Repository |
 | `argocd-healthy-synced.png` | Argo CD application synchronized and healthy |
 | `application-running.png` | Deployed Spring Boot application responding successfully |
