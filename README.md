@@ -90,7 +90,6 @@ The layout above documents the intended location for project documentation and s
 
 ## Evidence and screenshots
 
-Add screenshots to `docs/images/` and use the filenames below, or update the links to match the filenames you actually use.
 
 | Screenshot | What it demonstrates |
 |---|---|
